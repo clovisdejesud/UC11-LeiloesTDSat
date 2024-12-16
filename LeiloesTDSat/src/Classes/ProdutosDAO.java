@@ -1,3 +1,5 @@
+package Classes;
+
 
 import java.sql.PreparedStatement;
 import java.sql.Connection;
@@ -51,6 +53,7 @@ public class ProdutosDAO {
         PreparedStatement prep = null;
         ResultSet resultset = null;
 
+        ArrayList<ProdutosDTO> listagem = new ArrayList<>();
         try {
             conn = new conectaDAO().connectDB();
             prep = conn.prepareStatement("SELECT * FROM produtos");
