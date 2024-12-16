@@ -1,11 +1,12 @@
 package Classes;
 
-
 import java.sql.PreparedStatement;
 import java.sql.Connection;
 import javax.swing.JOptionPane;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.List;
+import java.sql.SQLException;
 
 public class ProdutosDAO {
 
@@ -48,28 +49,32 @@ public class ProdutosDAO {
 
     }
 
-    public ArrayList<ProdutosDTO> listarProdutos() {
+    public List<ProdutosDTO> listarProdutos() {
         Connection conn = null;
         PreparedStatement prep = null;
-        ResultSet resultset = null;
+        ResultSet rs = null;
 
-        ArrayList<ProdutosDTO> listagem = new ArrayList<>();
+        List<ProdutosDTO> produtos = new ArrayList<>();
+        
         try {
             conn = new conectaDAO().connectDB();
-            prep = conn.prepareStatement("SELECT * FROM produtos");
-            resultset = prep.executeQuery();
+            String sql = "SELECT * FROM produtos";
+            prep = conn.prepareStatement(sql);
             
-            while (resultset.next()) {
-            ProdutosDTO produto = new ProdutosDTO();
-            produto.setId(resultset.getInt("id"));
-            produto.setNome(resultset.getString("nome"));
-            produto.setValor(resultset.getInt("valor"));
-            produto.setStatus(resultset.getString("status"));
-            listagem.add(produto);
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                ProdutosDTO produto = new ProdutosDTO();
+                produto.setId(rs.getInt("id"));
+                produto.setNome(rs.getString("nome"));
+                produto.setValor(rs.getInt("valor"));
+                produto.setStatus(rs.getString("status"));
+                
+                produtos.add(produto);
             }
-            
+
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "erro ao conectar");
+            JOptionPane.showMessageDialog(null, "erro ao conectar" + ex.getMessage());
         } finally {
             try {
                 if (resultset != null) {
@@ -86,7 +91,7 @@ public class ProdutosDAO {
             }
 
         }
-        return listagem;
+        return produtos;
     }
 
 }

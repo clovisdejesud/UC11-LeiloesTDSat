@@ -1,26 +1,40 @@
 package View;
 
-
 import Classes.ProdutosDTO;
 import Classes.ProdutosDAO;
-import java.util.ArrayList;
+import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.*;
 
 public class listagemVIEW extends javax.swing.JFrame {
 
-    private final String[] tableColumns = {"ID", "Nome", "Valor", "Status"};
-    private DefaultTableModel tablemodel;
+    private DefaultTableModel modeloTabela;
 
     public listagemVIEW() {
         initComponents();
-        tablemodel = new DefaultTableModel(tableColumns, 0);
-        listaProdutos = new JTable(tablemodel);
-        JScrollPane scrollPane = new JScrollPane(listaProdutos);
-        add(scrollPane, java.awt.BorderLayout.CENTER);
-        setSize(600, 400);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        listarProdutos();
+        inicializarTabela();
+        carregarProdutos();
+    }
+
+    private void inicializarTabela() {
+        modeloTabela = new DefaultTableModel(new Object[]{"ID", "Nome", "Valor", "Status"}, 0);
+        listaProdutos.setModel(modeloTabela);
+
+    }
+
+    private void carregarProdutos() {
+        ProdutosDAO dao = new ProdutosDAO();
+        List<ProdutosDTO> produtos = dao.listarProdutos();
+
+        for (ProdutosDTO produto : produtos) {
+            System.out.println("Produtos: " + produto.getNome());//Somente para verificação
+            modeloTabela.addRow(new Object[]{
+                produto.getId(),
+                produto.getNome(),
+                produto.getValor(),
+                produto.getStatus()
+            });
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -138,7 +152,7 @@ public class listagemVIEW extends javax.swing.JFrame {
         ProdutosDAO produtosdao = new ProdutosDAO();
 
         //produtosdao.venderProduto(Integer.parseInt(id));
-        listarProdutos();
+        carregarProdutos();
     }//GEN-LAST:event_btnVenderActionPerformed
 
     private void btnVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVendasActionPerformed
@@ -155,7 +169,7 @@ public class listagemVIEW extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
 
-        java.awt.EventQueue.invokeLater(() -> {
+        SwingUtilities.invokeLater(() -> {
 
             new listagemVIEW().setVisible(true);
 
@@ -174,33 +188,5 @@ public class listagemVIEW extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTable listaProdutos;
     // End of variables declaration//GEN-END:variables
-
-    private void listarProdutos() {
-        try {
-            ProdutosDAO produtosdao = new ProdutosDAO();
-            //tablemodel.setNumRows(0);
-            tablemodel = new DefaultTableModel(tableColumns, 0);
-            listaProdutos.setModel(tablemodel);
-
-            ArrayList<ProdutosDTO> listagem = produtosdao.listarProdutos();
-
-            for (ProdutosDTO produto : listagem) {
-                System.out.println("Produto" + produto.getNome());
-                tablemodel.addRow(new Object[]{
-                    produto.getId(),
-                    produto.getNome(),
-                    produto.getValor(),
-                    produto.getStatus()
-                });
-                System.out.println("Linha adicionada" + produto.getNome());
-            }
-
-            listaProdutos.revalidate();
-            listaProdutos.repaint();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Erro ao listar" + e.getMessage());
-        }
-
-    }
 
 }
