@@ -6,7 +6,7 @@ import javax.swing.JOptionPane;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.SQLException;
+import Classes.ProdutosDTO;
 
 public class ProdutosDAO {
 
@@ -55,12 +55,12 @@ public class ProdutosDAO {
         ResultSet rs = null;
 
         List<ProdutosDTO> produtos = new ArrayList<>();
-        
+
         try {
             conn = new conectaDAO().connectDB();
             String sql = "SELECT * FROM produtos";
             prep = conn.prepareStatement(sql);
-            
+
             rs = prep.executeQuery();
 
             while (rs.next()) {
@@ -69,7 +69,7 @@ public class ProdutosDAO {
                 produto.setNome(rs.getString("nome"));
                 produto.setValor(rs.getInt("valor"));
                 produto.setStatus(rs.getString("status"));
-                
+
                 produtos.add(produto);
             }
 
@@ -94,4 +94,46 @@ public class ProdutosDAO {
         return produtos;
     }
 
+    public void venderProduto(ProdutosDTO produtos) {
+        if (produtos.getId() == null) {
+            JOptionPane.showMessageDialog(null, "Erro: ID nulo");
+        }
+
+        Connection conn = null;
+        PreparedStatement prep = null;
+
+        try {
+            conn = new conectaDAO().connectDB();
+
+            String sql = "UPDATE produtos SET status = 'Vendido' WHERE id = ?";
+            prep = conn.prepareStatement(sql);
+
+            prep.setInt(1, produtos.getId());
+
+            int linhasAfetadas = prep.executeUpdate();
+
+            if (linhasAfetadas > 0) {
+                JOptionPane.showMessageDialog(null, "Produto Vendido");
+            } else {
+                JOptionPane.showMessageDialog(null, "ID não encontrado");
+            }
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Erro: " + ex.getMessage());
+        } finally {
+            try {
+                if (prep != null) {
+                    prep.close();
+                }
+
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Erro ao fechar conexão: " + e.getMessage());
+            }
+
+        }
+
+    }
 }
