@@ -1,15 +1,47 @@
-
 package View;
 
+import Classes.ProdutosDAO;
+import Classes.ProdutosDTO;
+import java.util.List;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class vendasVIEW extends javax.swing.JFrame {
 
-    
+    private DefaultTableModel modeloTabela;
+
     public vendasVIEW() {
         initComponents();
+        inicializarTabela();
+        carregarProdutos();
     }
 
-    
+    private void inicializarTabela() {
+        modeloTabela = new DefaultTableModel(new Object[]{"ID", "Nome", "Valor", "Status"}, 0);
+        listaProdutosVendidos.setModel(modeloTabela);
+
+    }
+
+    private void carregarProdutos() {
+        ProdutosDAO dao = new ProdutosDAO();
+        List<ProdutosDTO> produtosVendidos = dao.listaProdutosVendidos();
+
+        modeloTabela.setRowCount(0);
+
+        if (produtosVendidos != null && !produtosVendidos.isEmpty()) {
+            for (ProdutosDTO produto : produtosVendidos) {
+                modeloTabela.addRow(new Object[]{
+                    produto.getId(),
+                    produto.getNome(),
+                    produto.getValor(),
+                    produto.getStatus()
+                });
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Não produtos vendidos");
+        }
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -63,7 +95,6 @@ public class vendasVIEW extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

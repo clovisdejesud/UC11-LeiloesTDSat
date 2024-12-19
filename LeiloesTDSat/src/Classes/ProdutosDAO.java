@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import Classes.ProdutosDTO;
+import java.sql.SQLException;
 
 public class ProdutosDAO {
 
@@ -135,5 +136,49 @@ public class ProdutosDAO {
 
         }
 
+    }
+
+    public List<ProdutosDTO> listaProdutosVendidos() {
+        Connection conn = null;
+        PreparedStatement prep = null;
+        ResultSet rs = null;
+        List<ProdutosDTO> produtosVendidos = new ArrayList<>();
+
+        try {
+            conn = new conectaDAO().connectDB();
+
+            String sql = "SELECT * FROM produtos WHERE status = 'Vendido'";
+            prep = conn.prepareStatement(sql);
+
+            rs = prep.executeQuery();
+
+            while (rs.next()) {
+                ProdutosDTO produto = new ProdutosDTO();
+                produto.setId(rs.getInt("id"));
+                produto.setNome(rs.getString("nome"));
+                produto.setValor(rs.getInt("valor"));
+                produto.setStatus(rs.getString("status"));
+                produtosVendidos.add(produto);
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Erro ao listar produtos vendidos: " + ex.getMessage());
+        } finally {
+
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (prep != null) {
+                    prep.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null, "Erro ao fechar recursos: " + ex.getMessage());
+            }
+        }
+        return produtosVendidos;
     }
 }
